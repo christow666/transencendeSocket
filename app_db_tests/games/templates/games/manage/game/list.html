@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}My games{% endblock %}
+
+{% block content %}
+  <h1>My games</h1>
+  <div class="module">
+    {% for game in object_list %}
+      <div class="game-info">
+        <h3>{{ game.title }}</h3>
+        <p>
+          <a href="{% url "game_edit" game.id %}">Edit</a>
+          <a href="{% url "game_delete" game.id %}">Delete</a>
+          <a href="{% url "game_module_update" game.id %}">Edit modules</a>
+          {% if game.modules.count > 0 %}
+            <a href="{% url "module_content_list" game.modules.first.id %}">
+            Manage contents</a>
+          {% endif %}
+        </p>
+      </div>
+    {% empty %}
+      <p>You haven't created any games yet.</p>
+    {% endfor %}
+    <p>
+      <a href="{% url "game_create" %}" class="button">Create new game</a>
+    </p>
+  </div>
+{% endblock %}

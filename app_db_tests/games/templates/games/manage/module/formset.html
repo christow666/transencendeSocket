@@ -1,0 +1,12 @@
+{% extends "base.html" %} {% block title %} Edit "{{ game.title }}" 
+{% endblock%} 
+{% block content %}
+<h1>Edit "{{ game.title }}"</h1>
+<div class="module">
+  <h2>Game modules</h2>
+  <form method="post">
+    {{ formset }} {{ formset.management_form }} {% csrf_token %}
+    <input type="submit" value="Save modules" />
+  </form>
+</div>
+{% endblock %}
