@@ -129,7 +129,8 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
         )
 
     async def trigger_disconnect(self, event):
-        await self.send(text_data="all user disconected")
+        data = event.data
+        # await self.send(text_data="all user disconected")
 
     async def process_game_postion(self, event):
         data = event["message"]
