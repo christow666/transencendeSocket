@@ -4,6 +4,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.utils import timezone
 import time
 import re
+from django.core.cache import cache
 
 
 class MessageType:
@@ -12,6 +13,7 @@ class MessageType:
     GAME_POSITION = 2
     GAME_START = 3
     GAME_END = 4
+    CLIENT_TYPE = 5
 
 
 class GameSocketConsumer(AsyncWebsocketConsumer):
@@ -37,6 +39,17 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f"game_socket_{self.id}"
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         await self.accept()
+        key = f"game_id_{self.id}"
+        value = cache.get(key)
+        if value is None:
+            cache.set(key, self.user)
+            await self.send(
+                text_data=json.dumps({"type": MessageType.CLIENT_TYPE, "msg": "host"})
+            )
+            return
+        await self.send(
+            text_data=json.dumps({"type": MessageType.CLIENT_TYPE, "msg": "guest"})
+        )
         # self.channel_layer.create_task(self.ping_loop())
 
     async def disconnect(self, close_code):
