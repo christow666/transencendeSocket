@@ -14,7 +14,7 @@ class MessageType:
     GAME_START = 3
     GAME_END = 4
     CLIENT_TYPE = 5
-
+    DISCONNECT = 6
 
 class GameSocketConsumer(AsyncWebsocketConsumer):
 
@@ -53,6 +53,8 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
         # self.channel_layer.create_task(self.ping_loop())
 
     async def disconnect(self, close_code):
+        key = f"game_id_{self.id}"
+        
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
 
     def searchType(self, json_string):
