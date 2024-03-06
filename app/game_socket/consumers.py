@@ -16,6 +16,7 @@ class MessageType:
     CLIENT_TYPE = 5
     DISCONNECT = 6
 
+
 class GameSocketConsumer(AsyncWebsocketConsumer):
 
     message_handlers = [None] * 100
@@ -53,9 +54,13 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
         # self.channel_layer.create_task(self.ping_loop())
 
     async def disconnect(self, close_code):
-        key = f"game_id_{self.id}"
-        
         await self.channel_layer.group_discard(self.room_group_name, self.channel_name)
+        await self.channel_layer.group_send(
+            self.room_group_name,
+            {
+                "type": "trigger_disconnect",
+            },
+        )
 
     def searchType(self, json_string):
         match = re.search(self.pattern, json_string)
