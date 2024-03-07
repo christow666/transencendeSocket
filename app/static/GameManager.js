@@ -83,7 +83,7 @@ class GameManager {
 
         this.game = new Game(this);
         document.getElementById('startMenu').style.display = 'none';
-        await this.game.initialize(newConfig);
+        await this.game.initialize(newConfig, this.socketManager);
         this.isMenued = false;
 
         this.renderGameScene();
@@ -218,7 +218,7 @@ class GameManager {
         if (this.game && this.game.endGameManager) {
             this.game.endGameManager.resetGame();
             // if (this.isPaused) {
-                this.togglePause(false);
+                // this.togglePause(true);
             // }
         }
     }

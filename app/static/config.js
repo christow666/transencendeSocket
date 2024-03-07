@@ -51,7 +51,7 @@ export const Configs = {
         size: 0.5,
         color: 0xff0000,
         maxVelocity: 0.1,
-        numberOfBalls: 5,
+        numberOfBalls: 10,
         duplicateBall: 0,
         speed: 0.02
     },

@@ -4,6 +4,7 @@ export class SocketManager {
         this.gameManager = gameManager;
         this.serverUrl = 'wss://' + window.location.host + '/ws/game/123/'; // Replace 'your-server-url' with the actual server URL
         this.connect();
+        this.isHost = 0;
 
         this.MessageType = {
             PING: 0,
@@ -44,6 +45,8 @@ export class SocketManager {
         switch (data.type) {
             case this.MessageType.CLIENT_TYPE:
                 this.gameManager.setRole(data.msg);
+                if (data.msg = "host")
+                    this.isHost = 1;
                 break;
             case this.MessageType.GAME_POSITION:
                 if (data.msg == "gameStart") {
@@ -55,6 +58,8 @@ export class SocketManager {
                 }
                 else if (data.ballPositions)
                     this.gameManager.handleBallMouvement(data); // Handle ball movement
+                else if (data.ps)
+                    this.gameManager.game.gui.updatePlayerScores(data.ps.l, data.ps.r)
                 break;
             case this.MessageType.GAME_START:
                 console.log(data);

@@ -5,10 +5,11 @@ import { Paddle } from './Paddle.js';
 import { ScoreTracker } from './ScoreTracker.js';
 import { EndGameManager } from './EndGameManager.js';
 import { Scene } from './Scene.js';
+import { SocketManager } from './SocketManager.js';
 
 export class Game {
     constructor(gameManager) {
-        this.gameManager =gameManager;
+        this.gameManager = gameManager;
         this.scene = null;
         this.camera = null;
         this.renderer = null;
@@ -23,7 +24,7 @@ export class Game {
         this.isPaused = false;
     }
 
-    async initialize(newConfig) {
+    async initialize(newConfig, socketManager) {
         // Create my scene
         const myScene = new Scene();
         this.scene = myScene.getScene();
@@ -35,7 +36,7 @@ export class Game {
         await this.gui.initGui();
 
         this.endGameManager = new EndGameManager(this.scene, this.gui, newConfig.ballConfigurations.duplicateBall, this.gameManager);
-        this.scoreTracker = new ScoreTracker(this.gui, this.endGameManager, newConfig.playerInfo, this);
+        this.scoreTracker = new ScoreTracker(this.gui, this.endGameManager, newConfig.playerInfo, socketManager);
         this.endGameManager.setScoreTracker(this.scoreTracker);
 
         // Create ball container
