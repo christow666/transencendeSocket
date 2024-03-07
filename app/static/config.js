@@ -51,7 +51,7 @@ export const Configs = {
         size: 0.5,
         color: 0xff0000,
         maxVelocity: 0.1,
-        numberOfBalls: 1,
+        numberOfBalls: 5,
         duplicateBall: 0,
         speed: 0.02
     },
@@ -59,6 +59,6 @@ export const Configs = {
         player1Name: "NANI",
         player2Name: "Twaza",
         gameModeName: "Normal",
-        gameWinningScore: 5
+        gameWinningScore: 500
     }
 };

@@ -27,29 +27,6 @@ class GameManager {
         console.log("role setted to", role)
     }
 
-    serializeGameData() {
-        if (this.isMenued)
-            return
-        const playerPositions = {
-            "lp": {"x": this.game.leftPaddle.mesh.position.x,
-                            "y": parseFloat(this.game.leftPaddle.mesh.position.y.toFixed(1))},
-            "rp": {"x": this.game.rightPaddle.mesh.position.x,
-                            "y": parseFloat(this.game.rightPaddle.mesh.position.y.toFixed(1))}
-        };
-        
-        const ballPositions = this.game.ballContainer.getBalls().map(ball => {
-            return {"x":parseFloat(ball.mesh.position.x.toFixed(1)) , "y": parseFloat(ball.mesh.position.y.toFixed(1))};
-        });
-
-        this.gameData = {
-            type : 2,
-            pp : playerPositions,
-            bp : ballPositions,
-        };
-    }
-
-    
-
     initializeKeyPressListener() {
         document.addEventListener('keydown', (event) => this.handleKeyPress(event));
     }
@@ -91,6 +68,7 @@ class GameManager {
         }
         else if (mode === 4){
             newConfig.playerInfo.gameModeName = "Remote Play";
+            // newConfig.ballConfigurations.duplicateBall = 1;
             this.socketManager = new SocketManager(this);
             await this.waitForRole();
             if (this.role == "host") {
@@ -137,6 +115,26 @@ class GameManager {
         }
     }
 
+    handleBallMouvement(data) {
+        // Ensure that this.game.ballContainer is not null
+        let index = 0;
+        if (this.game.ballContainer) {
+            this.game.ballContainer.getBalls().map(ball => {
+                // Ensure that data.ballPositions is not null and has at least one element
+                if (data.ballPositions && data.ballPositions.length > index) {
+                // Set the position of the current ball based on the corresponding element of data.ballPositions
+                ball.mesh.position.x = data.ballPositions[index].x;
+                ball.mesh.position.y = data.ballPositions[index].y;
+                index++;
+                } else {
+                    console.error('Invalid ball positions data:', data.ballPositions);
+                }
+            });
+        } else {
+            console.error('Ball container is not initialized.');
+        }
+    }
+
     serializePaddlePosition(paddle) {
         const playerPositions = {
             type : 2,
@@ -147,10 +145,14 @@ class GameManager {
     }
 
     serializeBallPosition() {
-        const ballPositions = this.game.ballContainer.getBalls().map(ball => {
-            return {"x":parseFloat(ball.mesh.position.x.toFixed(1)) , "y": parseFloat(ball.mesh.position.y.toFixed(1))};
-        });
-        return ballPositions;
+        const ballPositions = this.game.ballContainer.getBalls().map(ball => ({
+            "x": parseFloat(ball.mesh.position.x.toFixed(2)),
+            "y": parseFloat(ball.mesh.position.y.toFixed(2))
+        }));
+        return {
+            type: 2,
+            ballPositions: ballPositions
+        };
     }
 
     animate() {
@@ -164,32 +166,14 @@ class GameManager {
             else if (this.role == "guest") {
                 if (this.game.rightPaddle.update())
                     this.socketManager.sendGameMessage(this.serializePaddlePosition(this.game.rightPaddle));
-                // this.game.ballContainer.updateFromHost(this.game.leftPaddle.mesh, this.game.rightPaddle.mesh, this.game.topWall, this.game.bottomWall);
-                // this.game.rightPaddle.updateFromHost();
             }
             else {
                 this.game.rightPaddle.update();
                 this.game.leftPaddle.update();
                 this.game.ballContainer.update(this.game.leftPaddle.mesh, this.game.rightPaddle.mesh, this.game.topWall, this.game.bottomWall);
             }
-
-
-            // this.game.ballContainer.update(this.game.leftPaddle.mesh, this.game.rightPaddle.mesh, this.game.topWall, this.game.bottomWall);
             this.game.renderer.render(this.game.scene, this.game.camera);
         }
-
-
-
-        // Schedule serialization and logging every 2 seconds
-        // if (!this.isPaused && !this.isMenued && !this.serializationTimeoutId) {
-        //     this.serializationTimeoutId = setTimeout(() => {
-        //         this.serializeGameData();
-        //         // const jsonData = JSON.stringify(this.gameData)
-        //         // console.log(jsonData);
-        //         this.sendGameDataToServer(); // Uncomment this line to send game data to the server
-        //         this.serializationTimeoutId = null;
-        //     }, 2000);
-        // }
 
         if (!this.isPaused && !this.isMenued)
             this.animationFrameId = requestAnimationFrame(() => this.animate());

@@ -50,17 +50,21 @@ export class SocketManager {
                     this.gameManager.toggleWaitingMessage(false);
                     this.gameManager.togglePause(false);
                 }
-                else if (data.pp)
+                else if (data.pp) {
                     this.gameManager.handlePaddleMouvement(data);
+                }
+                else if (data.ballPositions)
+                    this.gameManager.handleBallMouvement(data); // Handle ball movement
                 break;
             case this.MessageType.GAME_START:
-                console.log(data)
+                console.log(data);
                 break;
             // Add cases for other message types if needed
             default:
                 console.error('Unknown message type:', data.type);
         }
     }
+    
 
     sendGameData(gameData) {
         // Send game data to the server
