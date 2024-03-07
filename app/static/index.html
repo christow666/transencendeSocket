@@ -17,6 +17,19 @@
             border-radius: 10px;
             display: none; /* Initially hidden */
         }
+        #waitingMessage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            color: white; /* Text color white */
+            text-align: center; /* Center align text */
+            background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black background */
+            padding: 20px;
+            border-radius: 10px;
+            display: none; /* Initially hidden */
+        }
         button {
             margin: 10px;
             padding: 10px 20px;
@@ -29,9 +42,12 @@
     <div id="startMenu">
         <h1>Pong Game</h1>
         <button id="mode1">Normal</button>
-        
         <button id="mode2">DupliPong</button>
         <button id="mode3">VS AI</button>
+        <button id="mode4">Remote Play</button>
+    </div>
+    <div id="waitingMessage" style="display: none;">
+        Waiting for another player...
     </div>
     <div id="gameContainer"></div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

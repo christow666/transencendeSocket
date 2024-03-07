@@ -53,7 +53,7 @@ export const Configs = {
         maxVelocity: 0.1,
         numberOfBalls: 1,
         duplicateBall: 0,
-        speed: 0.05
+        speed: 0.02
     },
     playerInfo: {
         player1Name: "NANI",

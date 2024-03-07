@@ -76,14 +76,18 @@ export class Paddle {
         if (!this.isAI) {
             if (this.moveUp && !this.checkWallCollision(this.walls, new THREE.Vector3(0, 1, 0))) {
                 this.mesh.position.y += this.speed;
+                return 1;
             }
             if (this.moveDown && !this.checkWallCollision(this.walls, new THREE.Vector3(0, -1, 0))) {
                 this.mesh.position.y -= this.speed;
+                return 1;
             }
         }
         else {
             this.AI.update();
+            return 0;
         }
+        return 0;
     }
 
     checkWallCollision(walls, direction) {
