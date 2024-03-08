@@ -35,9 +35,7 @@ class PlayerGameInfo(models.Model):
     disconnected = models.BooleanField(null=False, default=False)
     avg_latency = models.IntegerField(default=0)
     max_latency = models.IntegerField(default=0)
-    final_score = models.OneToOneField(
-        Score, related_name="final_game_score", on_delete=models.CASCADE
-    )
+    final_score = models.OneToOneField(Score, related_name="final_game_score", on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.player.username}"
@@ -77,10 +75,8 @@ class Round(models.Model):
         Score, related_name="round_player_score", blank=True
     )
 
-    # class Meta:
-
     def __str__(self):
-        return self.title
+        return self.game.title
 
 
 class Module(models.Model):

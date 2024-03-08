@@ -22,6 +22,11 @@ class ManageGameListView(ListView):
     template_name = 'games/manage/game/list.html'
 
     def get_queryset(self):
+        """_summary_
+
+        Returns:
+            _type_: _description_
+        """
         qs = super().get_queryset()
         return qs.filter(owner=self.request.user)
 
