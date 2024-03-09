@@ -140,6 +140,17 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # from django.urls import reverse_lazy
 # LOGIN_REDIRECT_URL = reverse_lazy('gamer_game_list')
 
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": "redis://cache:6379/1",  # Redis server address
+        # "OPTIONS": {
+        #     "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        # },
+        # "KEY_PREFIX": "myproject",  # Optional: prefix for cache keys
+    }
+}
+
 # CACHES = {
 #     'default': {
 #         'BACKEND': 'django.core.cache.backends.redis.RedisCache',

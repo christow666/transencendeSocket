@@ -4,7 +4,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from django.utils import timezone
 import time
 import re
-from .globals import get_redis_pool
+from django.core.cache import cache
 
 
 class MessageType:
@@ -33,32 +33,35 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
             print(f"Invalid message type: {msgType}")
 
     async def connect(self):
-        redis = await get_redis_pool()
         self.pong_received = True
         self.user = self.scope["user"]
         self.id = self.scope["url_route"]["kwargs"]["game_id"]
         self.room_group_name = f"game_socket_{self.id}"
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
-        key = f"game_id_{self.id}_host"
-        connected_users = await redis.get("connected_users")
-        print(connected_users)
-        if connected_users == 0 or connected_users is None:
-            await redis.incr("connected_users")
-            # await redis.set(key, self.user)
+        host_key = f"game_id_{self.id}_host"
+        game_users_count_key = f"game_id_{self.id}_connection"
+        connected_users = cache.get(game_users_count_key)
+        
+        if connected_users is None:
+            connected_users = 0
+            cache.set(game_users_count_key, connected_users)
+        
+        if connected_users == 0:
             await self.accept()
+            cache.incr(game_users_count_key)
+            cache.set(host_key, self.user.id)           
             await self.send(
                 text_data=json.dumps({"type": MessageType.CLIENT_TYPE, "msg": "host"})
             )
-
         elif connected_users == 1:
-            await redis.incr("connected_users")
+            await self.accept()
+            cache.incr(game_users_count_key)            
             await self.send(
                 text_data=json.dumps({"type": MessageType.CLIENT_TYPE, "msg": "guest"})
             )
-            await self.accept()
-        else:
             print("not connected")
-
+        else:
+            await self.close()
         # self.channel_layer.create_task(self.ping_loop())
 
     async def disconnect(self, close_code):
@@ -137,10 +140,10 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
         )
 
     async def disconnect_all(self, event):
-        redis = await get_redis_pool()
-        key = f"game_id_{self.id}_host"
-        await redis.delete(key)
-        await redis.delete("connected_users")
+        host_key = f"game_id_{self.id}_host"
+        game_users_count_key = f"game_id_{self.id}_connection"
+        cache.delete(host_key)
+        cache.delete(game_users_count_key)
         # await self.send(text_data="all user disconected")
 
     async def process_game_postion(self, event):
