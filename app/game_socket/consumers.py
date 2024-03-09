@@ -40,20 +40,25 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
         self.room_group_name = f"game_socket_{self.id}"
         await self.channel_layer.group_add(self.room_group_name, self.channel_name)
         key = f"game_id_{self.id}_host"
-        connected_users: int = await redis.get("connected_users")
+        connected_users = await redis.get("connected_users")
+        print(connected_users)
         if connected_users == 0 or connected_users is None:
             await redis.incr("connected_users")
-            await redis.set(key, self.user)
+            # await redis.set(key, self.user)
+            await self.accept()
             await self.send(
                 text_data=json.dumps({"type": MessageType.CLIENT_TYPE, "msg": "host"})
             )
-            await self.accept()
+
         elif connected_users == 1:
             await redis.incr("connected_users")
             await self.send(
                 text_data=json.dumps({"type": MessageType.CLIENT_TYPE, "msg": "guest"})
             )
             await self.accept()
+        else:
+            print("not connected")
+
         # self.channel_layer.create_task(self.ping_loop())
 
     async def disconnect(self, close_code):

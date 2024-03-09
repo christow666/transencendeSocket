@@ -3,8 +3,9 @@ services:
   cache:
     image: redis:7.0.4
     restart: always
-    volumes:
-      - ./data/cache:/data
+    command: redis-server --save "" --appendonly no
+    # volumes:
+    #   - ./data/cache:/data
       # - ./config/redis.conf:/usr/local/etc/redis/redis.conf
     # command: redis-server /usr/local/etc/redis/redis.conf
     # ports:
