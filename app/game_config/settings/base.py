@@ -180,8 +180,8 @@ CHANNEL_LAYERS = {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
             "hosts": [("cache", 6379)],
-            "capacity": 5000,
-            "expiry": 5,
+            "capacity": 50000,
+            "expiry": 2,
             # "connection_kwargs": {
             #     "max_connections": 60,
             #     "health_check_interval": 30,

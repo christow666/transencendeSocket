@@ -58,9 +58,9 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
             cache.incr(game_users_count_key)            
             await self.send(
                 text_data=json.dumps({"type": MessageType.CLIENT_TYPE, "msg": "guest"})
-            )
-            print("not connected")
+            )            
         else:
+            print("not connected")
             await self.close()
         # self.channel_layer.create_task(self.ping_loop())
 
