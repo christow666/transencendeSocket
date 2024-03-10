@@ -59,6 +59,6 @@ export const Configs = {
 		player1Name: "NANI",
 		player2Name: "Twaza",
 		gameModeName: "Normal",
-		gameWinningScore: 1000
+		gameWinningScore: 4000
 	}
 };
