@@ -53,13 +53,27 @@
     <div id="vsAIMenu" style="display: none;">
         <button id="vsPlayer">Vs Player</button>
         <button id="vsAi">Vs Ai</button>
-
     </div>
     
     <div id="onlineMenu" style="display: none;">
         <button id="onlineNormal">Normal</button>
         <button id="onlineDupliPong">DupliPong</button>
         <button id="onlineCustom">Custom</button>
+    </div>
+
+    <div id="localCustomMenu" style="display: none;">
+        <label for="leftPlayerName">Left paddle name:</label>
+        <input type="text" id="leftPlayerName"><br><br>
+    
+        <label for="numberOfBalls">Number of balls:</label>
+        <input type="range" id="numberOfBalls" min="0" max="100" value="0" onchange="document.getElementById('numberOfBallsValue').textContent = this.value;">
+        <span id="numberOfBallsValue">0</span><br><br>
+    
+        <label for="DuplicateMode">Duplicate mode:</label>
+        <label class="switch">
+            <input type="checkbox" id="customSwitch">
+            <span class="slider round"></span>
+        </label>
     </div>
     <div id="waitingMessage" style="display: none;">
         Waiting for another player...

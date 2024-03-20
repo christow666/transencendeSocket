@@ -26,7 +26,17 @@ export class Menu {
             document.getElementById('onlineNormal').addEventListener('click', () => this.handleOnlineModeSelection(1));
             document.getElementById('onlineDupliPong').addEventListener('click', () => this.handleOnlineModeSelection(2));
             document.getElementById('onlineCustom').addEventListener('click', () => this.handleOnlineModeSelection(3));
+
+            // Add event listeners for custom submenu inputs
+            document.getElementById('leftPlayerName').addEventListener('input', () => this.handleLeftPlayerNameChange());
+            document.getElementById('numberOfBalls').addEventListener('input', () => this.handleNumberOfBallsChange());
+            document.getElementById('DuplicateMode').addEventListener('change', () => this.handleDuplicateModeChange());
+        
         });
+    }
+    async handleCustomModeSelection(){
+        document.getElementById('vsAIMenu').style.display = 'none';
+        document.getElementById('localCustomMenu').style.display = 'block';
     }
 
     async handleOptionSelection(option) {
@@ -43,7 +53,10 @@ export class Menu {
 
     async handleVsAiSelection(isVsAi){
         document.getElementById('vsAIMenu').style.display = 'none';
-        await this.gameManager.handleLocalModeSelection(this.mode, isVsAi);
+        if (this.mode === 'localCustom')
+            document.getElementById('localCustomMenu').style.display = 'block';
+        else
+            await this.gameManager.handleLocalModeSelection(this.mode, isVsAi);
     }
 
     async handleLocalModeSelection(mode) {
@@ -58,5 +71,10 @@ export class Menu {
         this.gameManager.isRemote = 1;
         await this.gameManager.handleModeSelection(mode);
     }
+
+    handleLeftPlayerNameChange(){
+
+    }
+    
 }
 

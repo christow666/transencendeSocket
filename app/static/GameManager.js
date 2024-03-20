@@ -15,7 +15,7 @@ class GameManager {
 		this.gameData = null;
 		this.role = null;
 		this.isRemote = 0;
-		this.menu = new Menu(this);
+		// this.menu = new Menu(this);
 		this.ConfigManager = new ConfigManager(this);
 		// this.initializeMenu();
 		this.initializeKeyPressListener(); // Add event listener for key presses
@@ -37,6 +37,20 @@ class GameManager {
 
 	initializeKeyPressListener() {
 		document.addEventListener('keydown', (event) => this.handleKeyPress(event));
+	}
+
+	async startGame(){
+		// if (this.mode == normal)
+		this.game = new Game(this);
+		document.getElementById('mainMenu').style.display = 'none';
+		document.getElementById('localMenu').style.display = 'none';
+		document.getElementById('onlineMenu').style.display = 'none';
+
+		await this.game.initialize(this.ConfigManager, this.socketManager);
+		this.isMenued = false;
+
+		this.renderGameScene();
+		this.animate();
 	}
 
 	async handleLocalModeSelection(mode, isVsAi) {

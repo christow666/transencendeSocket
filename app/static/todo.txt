@@ -4,3 +4,4 @@ fix speed
 fix gui
     resisable name/max caracter
     winning score
+fix paddle center bounce

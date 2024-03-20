@@ -11,17 +11,19 @@ local:
             left player color;
             left player isAI;
             left paddle size;
+            left player control;
 
             right player name;
             right player color;
             right player isAI;
             right paddle size;
+            right player control;
 
             number if ball;
             ball starting speed;
             ball size;
             gamme winning score;
-            
+
             duplicate pong;
             game mode name;
 
