@@ -1,7 +1,9 @@
 // File: GameManager.js
 import { Game } from './Game.js';
 import { Configs } from './config.js';
+import { ConfigManager } from './ConfigManager.js';
 import { SocketManager } from './SocketManager.js';
+import { Menu } from './Menu.js';
 
 class GameManager {
 	constructor() {
@@ -13,7 +15,9 @@ class GameManager {
 		this.gameData = null;
 		this.role = null;
 		this.isRemote = 0;
-		this.initializeMenu();
+		this.menu = new Menu(this);
+		this.ConfigManager = new ConfigManager(this);
+		// this.initializeMenu();
 		this.initializeKeyPressListener(); // Add event listener for key presses
 		this.waitingMessageElement = document.getElementById('waitingMessage');
 
@@ -35,16 +39,26 @@ class GameManager {
 		document.addEventListener('keydown', (event) => this.handleKeyPress(event));
 	}
 
-	initializeMenu() {
-		document.addEventListener('DOMContentLoaded', () => {
-			const startMenu = document.getElementById('startMenu');
-			startMenu.style.display = 'block';
+	async handleLocalModeSelection(mode, isVsAi) {
+		if (isVsAi)
+			this.ConfigManager.paddles.rightPaddle.isAI = true;
+		if (mode === 'localNormal')
+			this.ConfigManager.setLocalNormalConfig();
+		else if (mode === 'localDupliPong')
+			this.ConfigManager.setLocalDuplipongConfig();
+		else if (mode === 'localCustom')
+			this.ConfigManager.setLocalCustomConfig();
 
-			document.getElementById('mode1').addEventListener('click', () => this.handleModeSelection(1));
-			document.getElementById('mode2').addEventListener('click', () => this.handleModeSelection(2));
-			document.getElementById('mode3').addEventListener('click', () => this.handleModeSelection(3));
-			document.getElementById('mode4').addEventListener('click', () => this.handleModeSelection(4));
-		});
+		this.game = new Game(this);
+		document.getElementById('mainMenu').style.display = 'none';
+		document.getElementById('localMenu').style.display = 'none';
+		document.getElementById('onlineMenu').style.display = 'none';
+
+		await this.game.initialize(this.ConfigManager, this.socketManager);
+		this.isMenued = false;
+
+		this.renderGameScene();
+		this.animate();
 	}
 
 	async handleModeSelection(mode) {
@@ -86,7 +100,9 @@ class GameManager {
 		}
 
 		this.game = new Game(this);
-		document.getElementById('startMenu').style.display = 'none';
+		document.getElementById('mainMenu').style.display = 'none';
+		// document.getElementById('localMenu').style.display = 'none';
+		// document.getElementById('onlineMenu').style.display = 'none';
 		await this.game.initialize(newConfig, this.socketManager);
 		this.isMenued = false;
 

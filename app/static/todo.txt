@@ -1,0 +1,6 @@
+fix speed  
+    max speed  
+    aceleration
+fix gui
+    resisable name/max caracter
+    winning score

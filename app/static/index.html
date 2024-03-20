@@ -39,12 +39,27 @@
     </style>
 </head>
 <body>
-    <div id="startMenu">
-        <h1>Pong Game</h1>
-        <button id="mode1">Normal</button>
-        <button id="mode2">DupliPong</button>
-        <button id="mode3">VS AI</button>
-        <button id="mode4">Remote Play</button>
+    <div id="mainMenu" style="display: none;">
+        <button id="localOption">Local</button>
+        <button id="onlineOption">Online</button>
+    </div>
+    
+    <div id="localMenu" style="display: none;">
+        <button id="localNormal">Normal</button>
+        <button id="localDupliPong">DupliPong</button>
+        <button id="localCustom">Custom</button>
+    </div>
+
+    <div id="vsAIMenu" style="display: none;">
+        <button id="vsPlayer">Vs Player</button>
+        <button id="vsAi">Vs Ai</button>
+
+    </div>
+    
+    <div id="onlineMenu" style="display: none;">
+        <button id="onlineNormal">Normal</button>
+        <button id="onlineDupliPong">DupliPong</button>
+        <button id="onlineCustom">Custom</button>
     </div>
     <div id="waitingMessage" style="display: none;">
         Waiting for another player...

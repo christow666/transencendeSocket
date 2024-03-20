@@ -1,0 +1,33 @@
+local:
+    normal:
+        vs player;
+        vs AI:
+    duplipong:
+        vs player;
+        vs AI:
+    custom:
+        custom menu:
+            left player name;
+            left player color;
+            left player isAI;
+            left paddle size;
+
+            right player name;
+            right player color;
+            right player isAI;
+            right paddle size;
+
+            number if ball;
+            ball starting speed;
+            ball size;
+            gamme winning score;
+            
+            duplicate pong;
+            game mode name;
+
+    
+online:
+    normal:
+    duplipong:
+    custom:
+        custom menu:
