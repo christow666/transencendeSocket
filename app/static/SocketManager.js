@@ -2,7 +2,7 @@ export class SocketManager {
 	constructor(gameManager) {
 		this.socket = null;
 		this.gameManager = gameManager;
-		this.serverUrl = 'wss://' + window.location.host + '/ws/game/123/'; // Replace 'your-server-url' with the actual server URL
+		this.serverUrl = 'wss://' + window.location.host + '/ws/game/' + this.gameManager.gameID + '/';
 		this.connect();
 		this.isHost = 0;
 
@@ -51,9 +51,11 @@ export class SocketManager {
 	parseMessage(data) {
 		switch (data.type) {
 			case this.MessageType.CLIENT_TYPE:
+				console.log(data.msg)
 				this.gameManager.setRole(data.msg);
-				if (data.msg = "host")
+				if (data.msg = "host"){
 					this.isHost = 1;
+				}
 				break;
 			case this.MessageType.GAME_POSITION:
 				if (data.msg == "gameStart") {

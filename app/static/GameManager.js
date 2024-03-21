@@ -15,6 +15,7 @@ class GameManager {
 		this.gameData = null;
 		this.role = null;
 		this.isRemote = 0;
+		this.gameID = 0;
 		// this.menu = new Menu(this);
 		this.ConfigManager = new ConfigManager(this);
 		// this.initializeMenu();
@@ -40,67 +41,7 @@ class GameManager {
 	}
 
 	async startGame(){
-		// if (this.mode == normal)
-		this.game = new Game(this);
-		document.getElementById('mainMenu').style.display = 'none';
-		document.getElementById('localMenu').style.display = 'none';
-		document.getElementById('onlineMenu').style.display = 'none';
-
-		await this.game.initialize(this.ConfigManager, this.socketManager);
-		this.isMenued = false;
-
-		this.renderGameScene();
-		this.animate();
-	}
-
-	async handleLocalModeSelection(mode, isVsAi) {
-		if (isVsAi)
-			this.ConfigManager.paddles.rightPaddle.isAI = true;
-		if (mode === 'localNormal')
-			this.ConfigManager.setLocalNormalConfig();
-		else if (mode === 'localDupliPong')
-			this.ConfigManager.setLocalDuplipongConfig();
-		else if (mode === 'localCustom')
-			this.ConfigManager.setLocalCustomConfig();
-
-		this.game = new Game(this);
-		document.getElementById('mainMenu').style.display = 'none';
-		document.getElementById('localMenu').style.display = 'none';
-		document.getElementById('onlineMenu').style.display = 'none';
-
-		await this.game.initialize(this.ConfigManager, this.socketManager);
-		this.isMenued = false;
-
-		this.renderGameScene();
-		this.animate();
-	}
-
-	async handleModeSelection(mode) {
-		if (this.game) {
-			this.stopGame();
-		}
-
-		let newConfig = this.deepCopy(this.originalConfigs);
-
-		if (mode === 2) {
-			newConfig.playerInfo.gameWinningScore = 5000;
-			newConfig.ballConfigurations.duplicateBall = 1;
-			newConfig.playerInfo.gameModeName = "DupliPong";
-			newConfig.paddles.rightPaddle.isAI = 1;
-			newConfig.paddles.leftPaddle.isAI = 1;
-		}
-		else if (mode === 3) {
-			newConfig.playerInfo.gameWinningScore = 500;
-			newConfig.ballConfigurations.numberOfBalls = 1;
-			newConfig.playerInfo.gameModeName = "Vs AI";
-			newConfig.paddles.leftPaddle.height = 3;
-			newConfig.paddles.rightPaddle.height = 3;
-			newConfig.paddles.rightPaddle.isAI = 1;
-			newConfig.paddles.leftPaddle.isAI = 1;
-		}
-		else if (mode === 4) {
-			newConfig.playerInfo.gameModeName = "Remote Play";
-			// newConfig.ballConfigurations.duplicateBall = 1;
+		if (this.isRemote){
 			this.socketManager = new SocketManager(this);
 			await this.waitForRole();
 			if (this.role == "host") {
@@ -110,19 +51,87 @@ class GameManager {
 			else if (this.role == "guest") {
 				this.socketManager.sendGameData({ type: 2, msg: "gameStart" })
 			}
-
 		}
 
 		this.game = new Game(this);
-		document.getElementById('mainMenu').style.display = 'none';
-		// document.getElementById('localMenu').style.display = 'none';
-		// document.getElementById('onlineMenu').style.display = 'none';
-		await this.game.initialize(newConfig, this.socketManager);
+
+		await this.game.initialize(this.ConfigManager, this.socketManager);
 		this.isMenued = false;
 
 		this.renderGameScene();
 		this.animate();
 	}
+
+	// async handleLocalModeSelection(mode, isVsAi) {
+	// 	if (isVsAi)
+	// 		this.ConfigManager.paddles.rightPaddle.isAI = true;
+	// 	if (mode === 'localNormal')
+	// 		this.ConfigManager.setLocalNormalConfig();
+	// 	else if (mode === 'localDupliPong')
+	// 		this.ConfigManager.setLocalDuplipongConfig();
+	// 	else if (mode === 'localCustom')
+	// 		this.ConfigManager.setLocalCustomConfig();
+
+	// 	this.game = new Game(this);
+	// 	document.getElementById('mainMenu').style.display = 'none';
+	// 	document.getElementById('localMenu').style.display = 'none';
+	// 	document.getElementById('onlineMenu').style.display = 'none';
+
+	// 	await this.game.initialize(this.ConfigManager, this.socketManager);
+	// 	this.isMenued = false;
+
+	// 	this.renderGameScene();
+	// 	this.animate();
+	// }
+
+	// async handleModeSelection(mode) {
+	// 	if (this.game) {
+	// 		this.stopGame();
+	// 	}
+
+	// 	let newConfig = this.deepCopy(this.originalConfigs);
+
+	// 	if (mode === 2) {
+	// 		newConfig.playerInfo.gameWinningScore = 5000;
+	// 		newConfig.ballConfigurations.duplicateBall = 1;
+	// 		newConfig.playerInfo.gameModeName = "DupliPong";
+	// 		newConfig.paddles.rightPaddle.isAI = 1;
+	// 		newConfig.paddles.leftPaddle.isAI = 1;
+	// 	}
+	// 	else if (mode === 3) {
+	// 		newConfig.playerInfo.gameWinningScore = 500;
+	// 		newConfig.ballConfigurations.numberOfBalls = 1;
+	// 		newConfig.playerInfo.gameModeName = "Vs AI";
+	// 		newConfig.paddles.leftPaddle.height = 3;
+	// 		newConfig.paddles.rightPaddle.height = 3;
+	// 		newConfig.paddles.rightPaddle.isAI = 1;
+	// 		newConfig.paddles.leftPaddle.isAI = 1;
+	// 	}
+	// 	else if (mode === 4) {
+	// 		newConfig.playerInfo.gameModeName = "Remote Play";
+	// 		// newConfig.ballConfigurations.duplicateBall = 1;
+	// 		this.socketManager = new SocketManager(this);
+	// 		await this.waitForRole();
+	// 		if (this.role == "host") {
+	// 			this.toggleWaitingMessage(true);
+	// 			this.togglePause(true);
+	// 		}
+	// 		else if (this.role == "guest") {
+	// 			this.socketManager.sendGameData({ type: 2, msg: "gameStart" })
+	// 		}
+
+	// 	}
+
+	// 	this.game = new Game(this);
+	// 	document.getElementById('mainMenu').style.display = 'none';
+	// 	// document.getElementById('localMenu').style.display = 'none';
+	// 	// document.getElementById('onlineMenu').style.display = 'none';
+	// 	await this.game.initialize(newConfig, this.socketManager);
+	// 	this.isMenued = false;
+
+	// 	this.renderGameScene();
+	// 	this.animate();
+	// }
 
 	async waitForRole() {
 		// Use a promise to wait for the role to be set

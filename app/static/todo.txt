@@ -5,3 +5,5 @@ fix gui
     resisable name/max caracter
     winning score
 fix paddle center bounce
+larger map?
+await ballcontainer init for remote
