@@ -1,9 +1,13 @@
 services:
 
-  cache:
+  msg_broker:
     image: redis:7.0.4
     restart: always
     command: redis-server --save "" --appendonly no --maxmemory 512mb
+  cache:
+    image: redis:7.0.4
+    restart: always
+    command: redis-server --save "" --appendonly no --maxmemory 128mb
     # volumes:
     #   - ./data/cache:/data
       # - ./config/redis.conf:/usr/local/etc/redis/redis.conf

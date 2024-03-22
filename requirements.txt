@@ -3,6 +3,7 @@ aioredis
 asgiref
 Twisted[http2,tls]
 async-timeout
+django-async-redis
 attrs
 Twisted
 autobahn
