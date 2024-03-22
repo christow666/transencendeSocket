@@ -1,61 +1,33 @@
 services:
 
+
   cache:
-    image: redis:7.0.4
+    build: ./app/images/redis/
     restart: always
-    command: redis-server --save "" --appendonly no --maxmemory 512mb
-    # volumes:
-    #   - ./data/cache:/data
-      # - ./config/redis.conf:/usr/local/etc/redis/redis.conf
-    # command: redis-server /usr/local/etc/redis/redis.conf
-    # ports:
-    #   - "6379:6379"
-
-  # db:
-  #   image: postgres:14.5
-  #   restart: always
-  #   volumes:
-  #     - ./data/db:/var/lib/postgresql/data
-  #   environment:
-  #     - POSTGRES_DB=postgres
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-
-  # web:
-  #   build: .
-  #   command: ["uwsgi", "--ini", "/app/config/uwsgi/uwsgi.ini"]
-  #   restart: always
-  #   volumes:
-  #     - ./config:/app/config
-  #   environment:
-  #     - DJANGO_SETTINGS_MODULE=game_config.settings.prod
-  #     - POSTGRES_DB=postgres
-  #     - POSTGRES_USER=postgres
-  #     - POSTGRES_PASSWORD=postgres
-  #   depends_on:
-  #     - cache
 
   daphne:
-    build: .
-    working_dir: /app/
-    command: ["/bin/sh", "/app/run.sh"]
-    # command: ["/bin/sh", "/app/run_debug.sh"]
-    restart: always
+    build: ./app/images/daphne/
     volumes:
-      - ./app:/app
+      - /venv                             # It doesnt recompile everytime we just Stop & Run it again
+      - daphne_socket:/app/game_config/   #
     environment:
       - DJANGO_SETTINGS_MODULE=game_config.settings.local
     depends_on:
       - cache
+    restart: always
+
 
   nginx:
-    image: nginx:1.23.1
-    restart: always
+    build: ./app/images/nginx/
     volumes:
-      - ./config/nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - ./app:/app
+      - daphne_socket:/sock
+      - ./app/images/daphne/srcs:/app       # 
     ports:
       - "8080:80"
       - "443:443"
-    # depends_on:
-    #   - web
+    restart: always
+
+
+
+volumes:
+  daphne_socket:
