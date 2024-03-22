@@ -53,9 +53,8 @@ export class SocketManager {
 			case this.MessageType.CLIENT_TYPE:
 				console.log(data.msg)
 				this.gameManager.setRole(data.msg);
-				if (data.msg = "host"){
+				if (data.msg == "host")
 					this.isHost = 1;
-				}
 				break;
 			case this.MessageType.GAME_POSITION:
 				if (data.msg == "gameStart") {
@@ -84,17 +83,7 @@ export class SocketManager {
 		// Send game data to the server
 		if (this.socket.readyState === WebSocket.OPEN) {
 			const jsonData = JSON.stringify(gameData);
-			console.log("msg sent", jsonData);
-			this.socket.send(jsonData);
-		} else {
-			console.error('Socket connection not open. Unable to send data.');
-		}
-	}
-
-	sendGameMessage(gameMessage) {
-		if (this.socket.readyState === WebSocket.OPEN) {
-			const jsonData = JSON.stringify(gameMessage);
-			console.log("message sent", jsonData);
+			// console.log("msg sent", jsonData);
 			this.socket.send(jsonData);
 		} else {
 			console.error('Socket connection not open. Unable to send data.');

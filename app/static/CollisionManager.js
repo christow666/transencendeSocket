@@ -76,11 +76,16 @@ export class CollisionManager {
     
     adjustVelocity(normalizedOffset, ballVelocity, maxVelocity) {
         ballVelocity.y = normalizedOffset * maxVelocity * 0.2;
-        ballVelocity.x *= 1.01;
+        if (ballVelocity.y == 0)
+            ballVelocity.y = Math.random() * 0.1 - 0.05;
+        if (Math.abs(ballVelocity.x) <= 0.25)
+            ballVelocity.x *= 1.01;
+        // console.log(ballVelocity.x);
     }
     
     adjustMaxVelocity(maxVelocity) {
-        maxVelocity *= 1.01;
+        if (Math.abs(maxVelocity) <= 0.25)
+            maxVelocity *= 1.01;
     }
     
     reverseXVelocity(ballVelocity) {
