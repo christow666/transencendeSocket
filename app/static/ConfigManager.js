@@ -55,45 +55,43 @@ export class ConfigManager {
             speed: 0.05
         };
         this.playerInfo = {
-            player1Name: "NANI",
-            player2Name: "Twaza",
-            gameModeName: "Normal",
+            player1Name: "christopher",
+            player2Name: "perron",
+            gameModeName: "NEW GUI",
             gameWinningScore: 4000
         };
         this.testConfig = {
-            isOnline: 1,
+            isOnline: 0,
             mode: "normal",
             localIsAI: 0,
             isHost: 1,
-            gameID: 123,
+            gameID: 124,
+            hostName: "host",
+            guestName: "guest",
             localcustom: {
                 leftPlayerName: "knewl",
                 leftPlayerColor: 0xff00ff,
                 leftPlayerIsAI: 1,
-                leftPaddleSize: 4,
+                leftPaddleSize: 0.5,
                 leftPaddleSpeed: 0.1,
                 leftPaddleControls: { up: 'w', down: 's' },
                 rightPlayerName: "nice",
                 rightPlayerColor: 0xffff00,
                 rightPlayerIsAI: 1,
-                rightPaddleSize: 1,
+                rightPaddleSize: 0.5,
                 rightPaddleSpeed: 0.1,
                 rightPaddleControls: { up: 'o', down: 'l' },
-                numberOfBalls: 1,
-                ballStartingSpeed: 0.05,
-                ballSize: 1,
-                gameWinningScore: 100,
-                isDuplicatePong: 0,
+                numberOfBalls: 1000,
+                ballStartingSpeed: 0.15,
+                ballSize: 0.5,
+                gameWinningScore: 100000,
+                isDuplicatePong: 1,
                 gameModeName: "customized"
             }  
         }
     }
 
-    setOnlineConfig(){
-
-    }
-
-    setLocalConfig(){
+    setConfig(){
         this.gameManager.mode = this.testConfig.mode;
         this.gameManager.isRemote = this.testConfig.isOnline;
         this.gameManager.ConfigManager.paddles.rightPaddle.isAI = this.testConfig.localIsAI;
@@ -133,25 +131,9 @@ export class ConfigManager {
 
     }
 
-    getGameConfig(){
-        // if (this.isOnline)
-        //     // setOnlineConfig();
-        //     return;
-        // else 
-            this.setLocalConfig();
-        this.gameManager.startGame();
-    }
-
-    setLocalNormalConfig() {}
-
-    setLocalDuplipongConfig(){
-        this.playerInfo.gameWinningScore = 5000;
-		this.ballConfigurations.duplicateBall = 1;
-		// this.playerInfo.gameModeName = "DupliPong";
-    }
-
-    setLocalCustomConfig(){
-
-    }
+    // requestGame(config){
+    //     this.setConfig(config);
+    //     this.gameManager.startGame();
+    // }
 }
 

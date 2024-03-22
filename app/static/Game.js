@@ -24,7 +24,7 @@ export class Game {
         this.isPaused = false;
     }
 
-    async initialize(newConfig, socketManager) {
+    async initialize(newConfig) {
         // Create my scene
         const myScene = new Scene();
         this.scene = myScene.getScene();
@@ -36,7 +36,7 @@ export class Game {
         await this.gui.initGui();
 
         this.endGameManager = new EndGameManager(this.scene, this.gui, newConfig.ballConfigurations.duplicateBall, this.gameManager);
-        this.scoreTracker = new ScoreTracker(this.gui, this.endGameManager, newConfig.playerInfo, socketManager);
+        this.scoreTracker = new ScoreTracker(this.gui, this.endGameManager, newConfig.playerInfo);
         this.endGameManager.setScoreTracker(this.scoreTracker);
 
         // Create ball container

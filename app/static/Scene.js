@@ -5,8 +5,17 @@ export class Scene {
 
         // Set up camera
         this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        this.camera.position.set(0, 0, 10); // Move the camera away from the origin
-        this.camera.lookAt(this.scene.position);
+        this.camera.position.set(0, 1.5, 10); // Move the camera away from the origin
+        
+
+        // Create a new target position slightly to the right of the scene's position
+        var targetPosition = new THREE.Vector3().copy(this.scene.position);
+        var offsetY = 1.5;
+        targetPosition.y += offsetY;
+
+        // Set the camera to look at the new target position
+        this.camera.lookAt(targetPosition);
+        // this.camera.lookAt(this.scene.position);
 
         // Set up renderer
         this.renderer = new THREE.WebGLRenderer();

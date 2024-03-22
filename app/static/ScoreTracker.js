@@ -1,5 +1,5 @@
 export class ScoreTracker {
-	constructor(gui, endGameManager, playerInfo, socketManager) {
+	constructor(gui, endGameManager, playerInfo) {
 		this.player1Score = 0;
 		this.player2Score = 0;
 		this.player1Name = playerInfo.player1Name;
@@ -7,6 +7,10 @@ export class ScoreTracker {
 		this.gui = gui;
 		this.endGameManager = endGameManager;
 		this.gameWinningScore = playerInfo.gameWinningScore;
+		this.socketManager = null;
+	}
+
+	setSocketManager(socketManager){
 		this.socketManager = socketManager;
 	}
 
@@ -27,9 +31,7 @@ export class ScoreTracker {
 			this.player1Score += ballValue;
 		else
 			this.player1Score++;
-		this.gui.updatePlayerScores(this.player1Score, this.player2Score);
-		// if (this.socketManager.isHost)
-		// 	this.socketManager.sendGameData(this.serializePlayerScore());
+		this.gui.updatePlayerScores(this.player1Score, this.player2Score, 1);
 		if (this.player1Score >= this.gameWinningScore) {
 			console.log("p1 win")
 			this.endGameManager.endGame(this.player1Name);
@@ -44,9 +46,7 @@ export class ScoreTracker {
 			this.player2Score += ballValue;
 		else
 			this.player2Score++;
-		this.gui.updatePlayerScores(this.player1Score, this.player2Score);
-		// if (this.socketManager.isHost)
-		// 	this.socketManager.sendGameData(this.serializePlayerScore());
+		this.gui.updatePlayerScores(this.player1Score, this.player2Score, 2);
 		if (this.player2Score >= this.gameWinningScore) {
 			console.log("p2 win")
 			this.endGameManager.endGame(this.player2Name);

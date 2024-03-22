@@ -2,21 +2,23 @@ export class Gui {
 	constructor(scene, playerInfo) {
 		this.font = null;
 		this.scene = scene;
+		this.scorePosiotionY = 5.5;
+		this.playerNamePositionY = 6.5
 		this.player1Name = playerInfo.player1Name;
 		this.player2Name = playerInfo.player2Name;
 		this.gameModeName = playerInfo.gameModeName;
 		this.numberMeshes = []; // Initialize numberMeshes as an empty array
 		this.playerScores = {
-			1: { score: 0, position: { x: -4, y: 5.5, z: 0 } }, // Initial score and position for player 1
-			2: { score: 0, position: { x: 6.5, y: 5.5, z: 0 } }   // Initial score and position for player 2
+			1: { score: 0, position: { x: -5.25, y: this.scorePosiotionY, z: 0 } }, // Initial score and position for player 1
+			2: { score: 0, position: { x: 4.75, y: this.scorePosiotionY, z: 0 } }   // Initial score and position for player 2
 		};
 	}
 
 	async initGui() {
 		await this.createFont(); // Load the font
 		this.createPongText(this.gameModeName);
-		this.createPlayerNameText(this.player1Name, { x: -7, y: 5.5, z: 0 });
-		this.createPlayerNameText(this.player2Name, { x: 3, y: 5.5, z: 0 });
+		this.createPlayerNameText(this.player1Name, { x: -5, y: this.playerNamePositionY, z: 0 });
+		this.createPlayerNameText(this.player2Name, { x: 5, y: this.playerNamePositionY, z: 0 });
 		this.createEndGameMessage();
 		this.createScoreTextMeshes();
 		this.updateScoreTextMesh(0, this.playerScores[1].position); // Update score text for player 1
@@ -78,7 +80,7 @@ export class Gui {
 		const textMesh = new THREE.Mesh(textGeometry, textMaterial);
 
 		// Position the text in the center of the scene
-		textMesh.position.set(0, 6.5, 0); // Adjust position as needed
+		textMesh.position.set(0, 7.5, 0); // Adjust position as needed
 
 		// Add the text mesh to the scene
 		this.scene.add(textMesh);
@@ -86,7 +88,7 @@ export class Gui {
 
 	createPlayerNameText(customName, position) {
 
-		const playerName = customName + " :";
+		const playerName = customName ;
 
 		let cls = this;
 		const textGeometry = new THREE.TextGeometry(playerName, {
@@ -97,9 +99,15 @@ export class Gui {
 			bevelEnabled: false // Disable bevel for simplicity
 		});
 
+		// Center the text geometry
+		textGeometry.computeBoundingBox();
+		const textWidth = textGeometry.boundingBox.max.x - textGeometry.boundingBox.min.x;
+		textGeometry.translate(-0.5 * textWidth, 0, 0);
+
 		const textMaterial = new THREE.MeshStandardMaterial({ color: 0xffffff });
 		const textMesh = new THREE.Mesh(textGeometry, textMaterial);
-
+	
+		// Set the position of the text mesh
 		textMesh.position.set(position.x, position.y, position.z);
 
 		// Add the text mesh to the scene
@@ -117,6 +125,7 @@ export class Gui {
 			);
 			this.scene.remove(...existingScoreMeshes);
 		}
+		let magic = scoreAsString.length * -0.25;
 		// Adjust position for each digit
 		let offsetX = 0;
 		for (const digitChar of scoreAsString) {
@@ -124,11 +133,16 @@ export class Gui {
 			const digitMesh = this.numberMeshes[digit];
 			if (digitMesh) {
 				const meshClone = digitMesh.clone();
-				meshClone.position.set(position.x + offsetX, position.y, position.z);
+
+			// Adjust position for the leftward movement
+				const adjustedPosition = new THREE.Vector3(position.x + offsetX, position.y, position.z);
+				meshClone.position.copy(adjustedPosition);
 				meshClone.userData.playerScoreMesh = true;
 				this.scene.add(meshClone);
 			}
+
 			offsetX += 0.5;
+			
 		}
 	}
 
@@ -150,9 +164,11 @@ export class Gui {
 		}
 	}
 
-	updatePlayerScores(player1Score, player2Score) {
-		this.updateScoreTextMesh(player1Score, this.playerScores[1].position); // Update score text for player 1
-		this.updateScoreTextMesh(player2Score, this.playerScores[2].position); // Update score text for player 2
+	updatePlayerScores(player1Score, player2Score, scoringPlayer) {
+		if (scoringPlayer == 1)
+			this.updateScoreTextMesh(player1Score, this.playerScores[1].position); // Update score text for player 1
+		else
+			this.updateScoreTextMesh(player2Score, this.playerScores[2].position); // Update score text for player 2
 	}
 
 	resetScores() {
