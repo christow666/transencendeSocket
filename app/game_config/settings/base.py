@@ -142,14 +142,39 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CACHES = {
     "default": {
-        "BACKEND": "django.core.cache.backends.redis.RedisCache",
-        "LOCATION": "redis://cache:6379/1",  # Redis server address
-        # "OPTIONS": {
-        #     "CLIENT_CLASS": "django_redis.client.DefaultClient",
-        # },
-        # "KEY_PREFIX": "myproject",  # Optional: prefix for cache keys
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://cache:6379/1",
+        "OPTIONS": {"CLIENT_CLASS": "django_redis.client.DefaultClient"},
     }
 }
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+    },
+}
+
+# CACHES = {
+#     "default": {
+#         "BACKEND": "django.core.cache.backends.redis.RedisCache",
+#         "LOCATION": "redis://cache:6379/1",  # Redis server address
+#         # "OPTIONS": {
+#         #     "CLIENT_CLASS": "django_redis.client.DefaultClient",
+#         # },
+#         # "KEY_PREFIX": "myproject",  # Optional: prefix for cache keys
+#     }
+# }
 
 # CACHES = {
 #     'default': {
@@ -179,7 +204,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [("cache", 6379)],
+            "hosts": [("msg_broker", 6379)],
             "capacity": 50000,
             "expiry": 2,
             # "connection_kwargs": {

@@ -1,8 +1,22 @@
 export class SocketManager {
+
+	generateUUID() {
+		return 'xxxx-xxxx-xxxx'.replace(/[x]/g, function (c) {
+			const r = (Math.random() * 16) | 0;
+			return r.toString(16);
+		});
+	}
+
 	constructor(gameManager) {
 		this.socket = null;
 		this.gameManager = gameManager;
-		this.serverUrl = 'wss://' + window.location.host + '/ws/game/' + this.gameManager.gameID + '/';
+		// temp solution
+		let userID = localStorage.getItem('userID');
+		if (!userID) {
+			userID = generateUUID();
+			localStorage.setItem('userID', userID);
+		}
+		this.serverUrl = 'wss://' + window.location.host + '/ws/game/' + this.gameManager.gameID + `/?userID=${userID}`;
 		this.connect();
 		this.isHost = 0;
 
