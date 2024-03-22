@@ -13,9 +13,10 @@ export class SocketManager {
 		// temp solution
 		let userID = localStorage.getItem('userID');
 		if (!userID) {
-			userID = generateUUID();
+			userID = this.generateUUID();
 			localStorage.setItem('userID', userID);
 		}
+		console.log("userid:" + userID);
 		this.serverUrl = 'wss://' + window.location.host + '/ws/game/' + this.gameManager.gameID + `/?userID=${userID}`;
 		this.connect();
 		this.isHost = 0;
@@ -40,6 +41,7 @@ export class SocketManager {
 
 		this.socket.onmessage = (event) => {
 			// Handle incoming messages from the server
+			console.log(event.data);
 			const obj = JSON.parse(event.data);
 			if (Array.isArray(obj)) {
 				obj.forEach(data => {
@@ -63,11 +65,11 @@ export class SocketManager {
 	}
 
 	parseMessage(data) {
+		console.log(data);
 		switch (data.type) {
 			case this.MessageType.CLIENT_TYPE:
-				console.log(data.msg)
 				this.gameManager.setRole(data.msg);
-				if (data.msg = "host") {
+				if (data.msg === "host") {
 					this.isHost = 1;
 				}
 				break;
@@ -76,7 +78,11 @@ export class SocketManager {
 					this.gameManager.toggleWaitingMessage(false);
 					this.gameManager.togglePause(false);
 				}
-				else if (data.pp) {
+				else if (data.pp) {/* The code `this.gameManager.handlePaddleMouvement(data);` is calling a method
+				named `handlePaddleMouvement` on the `gameManager` object with the `data`
+				parameter passed to it. This method is likely responsible for handling the
+				movement of a paddle in the game based on the data received from the server. */
+
 					this.gameManager.handlePaddleMouvement(data);
 				}
 				else if (data.ballPositions)
@@ -85,11 +91,12 @@ export class SocketManager {
 					this.gameManager.game.gui.updatePlayerScores(data.ps.l, data.ps.r)
 				break;
 			case this.MessageType.GAME_START:
-				console.log(data);
-				break;
+			// console.log(data);
+			// break;
 			// Add cases for other message types if needed
 			default:
-				console.error('Unknown message type:', data.type);
+				console.log('Unknown message type:', data)
+			// console.error('Unknown message type:', data);
 		}
 	}
 
