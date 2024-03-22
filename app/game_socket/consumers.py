@@ -26,6 +26,7 @@ class MessageType:
     GAME_FULL = 11
     ADDED_TO_TOURNAMENT = 12
     GAME_ALREADY_STARTED = 13
+    GAME_RESUMED = 14
 
 
 class GameSocketConsumer(AsyncWebsocketConsumer):
@@ -34,9 +35,9 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
     message_handlers = [None] * 100
     pattern = r"\"type\"\s*:\s*(\d+)"
 
-    async def is_host(self, user_id):
-        get_user_id = await self.get_key(user_id)
-        if get_user_id is None:
+    async def is_host(self):
+        get_user_id = await self.get_key(self.key_game_host)
+        if get_user_id is None or get_user_id != self.user_id:
             return False
         return True
 
@@ -114,31 +115,29 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
             self.key_tournament_room_user_ids
         )
 
-        print(self.key_game_started)
-        print(self.key_game_host)
-        print(self.key_game_room)
-        print(self.key_tournament_room)
-        print(self.key_disconnect)
-        print(self.key_game_room_user_ids)
-        print(self.key_tournament_room_user_ids)
-        print("disconnected")
-        print(have_been_disconnected)
-
         if have_been_disconnected:
-            print("have_been_disconnected")
             await self.accept()
-            user_is_host = await self.is_host(self.user_id)
+            user_is_host = await self.is_host()
+
             if user_is_host:
                 await self.send(
                     text_data=json.dumps(
-                        {"type": MessageType.CLIENT_TYPE, "msg": "host"}
+                        {
+                            "type": MessageType.CLIENT_TYPE,
+                            "msg": "host",
+                            "resumed host connection": "true",
+                        }
                     )
                 )
             # implement spactators
             else:
                 await self.send(
                     text_data=json.dumps(
-                        {"type": MessageType.CLIENT_TYPE, "msg": "guest"}
+                        {
+                            "type": MessageType.CLIENT_TYPE,
+                            "msg": "guest",
+                            "resumed geust connection": "true",
+                        }
                     )
                 )
             await self.remove_id_from_set(self.key_disconnect, self.user_id)
@@ -146,7 +145,6 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
 
         game_started = await self.get_key(self.key_game_started)
         if game_started:
-            print("Game started")
             await self.accept()
             await self.send(
                 text_data=json.dumps(
@@ -160,7 +158,6 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
             return
 
         if tournament_user_count == self.max_user_in_tournament:
-            print("Tournament user count")
             await self.accept()
             await self.send(
                 text_data=json.dumps(
@@ -195,13 +192,18 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
             )
 
         elif game_user_count == 0:
-            print("game_user_count")
             await self.accept()
             await self.set_key(self.key_game_host, self.user_id)
             await self.add_id_to_set(self.key_tournament_room_user_ids, self.user_id)
             await self.add_id_to_set(self.key_game_room_user_ids, self.user_id)
             await self.send(
-                text_data=json.dumps({"type": MessageType.CLIENT_TYPE, "msg": "host"})
+                text_data=json.dumps(
+                    {
+                        "type": MessageType.CLIENT_TYPE,
+                        "msg": "host",
+                        "userId": f"{self.user_id}",
+                    }
+                )
             )
         elif game_user_count == 1:
             await self.accept()
@@ -258,11 +260,11 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
             await self.channel_layer.group_send(
                 self.key_tournament_room,
                 {
-                    "type": "process_disconnect_countdown",
+                    "type": "process_disconnect",
                     "message": json.dumps(
                         {
                             "type": MessageType.DISCONNECT_COUNTDOWN,
-                            "msg": "User {user_id} will be disconnected in {i} seconds.",
+                            "msg": f"User {user_id} will be disconnected in {i} seconds.",
                         }
                     ),
                 },
@@ -271,11 +273,11 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
         await self.channel_layer.group_send(
             self.key_tournament_room,
             {
-                "type": "broadcast_message",
+                "type": "process_disconnect",
                 "message": json.dumps(
                     {
                         "type": MessageType.DISCONNECT,
-                        "msg": "User {user_id} have been disconnected.",
+                        "msg": f"User {user_id} have been disconnected.",
                     }
                 ),
             },
@@ -310,7 +312,6 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
         return type_value
 
     async def receive(self, text_data):
-        # print(text_data)
         msgType = self.searchType(text_data)
         await self.process_msg(msgType, text_data)
 
@@ -338,7 +339,7 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
         await self.send(text_data=json.dumps({"type": MessageType.PING}))
 
     async def handle_game_start(self, data):
-        user_is_host = self.is_host(self.user_id)
+        user_is_host = self.is_host()
         if user_is_host:
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -360,7 +361,7 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
             )
 
     async def handle_game_counter(self, data):
-        user_is_host = self.is_host(self.user_id)
+        user_is_host = self.is_host()
         if user_is_host:
             await self.channel_layer.group_send(
                 self.room_group_name,
@@ -386,7 +387,7 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
         )
 
     async def handle_game_end(self, data):
-        user_is_host = self.is_host(self.user_id)
+        user_is_host = self.is_host()
         if user_is_host:
             await self.channel_layer.group_send(
                 self.key_game_room,
@@ -402,8 +403,8 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
             )
 
     async def disconnect_all(self, event):
-        cache.delete(self.key_game_host)
-        cache.delete(self.game_users_count_key)
+        # cache.delete(self.key_game_host)
+        # cache.delete(self.game_users_count_key)
         await self.send(
             text_data=json.dumps({"type": -1, "msg": "disconnected all players"})
         )
@@ -427,7 +428,7 @@ class GameSocketConsumer(AsyncWebsocketConsumer):
         if sender_channel_name != self.channel_name:
             await self.send(text_data=data)
 
-    async def process_disconnect_countdown(self, event):
+    async def process_disconnect(self, event):
         data = event["message"]
         await self.send(text_data=data)
 

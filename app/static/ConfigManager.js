@@ -61,7 +61,7 @@ export class ConfigManager {
             gameWinningScore: 4000
         };
         this.testConfig = {
-            isOnline: 0,
+            isOnline: 1,
             mode: "normal",
             localIsAI: 0,
             isHost: 1,
@@ -87,11 +87,11 @@ export class ConfigManager {
                 gameWinningScore: 100000,
                 isDuplicatePong: 1,
                 gameModeName: "customized"
-            }  
+            }
         }
     }
 
-    setConfig(){
+    setConfig() {
         this.gameManager.mode = this.testConfig.mode;
         this.gameManager.isRemote = this.testConfig.isOnline;
         this.gameManager.ConfigManager.paddles.rightPaddle.isAI = this.testConfig.localIsAI;
@@ -99,12 +99,12 @@ export class ConfigManager {
             this.gameManager.gameID = this.testConfig.gameID;
         if (this.gameManager.mode === "normal")
             return;
-        else if (this.gameManager.mode === "duplipong"){
+        else if (this.gameManager.mode === "duplipong") {
             this.playerInfo.gameWinningScore = 5000;
-		    this.ballConfigurations.duplicateBall = 1;
-		    this.playerInfo.gameModeName = "DupliPong";
+            this.ballConfigurations.duplicateBall = 1;
+            this.playerInfo.gameModeName = "DupliPong";
         }
-        else if (this.gameManager.mode === "custom"){
+        else if (this.gameManager.mode === "custom") {
             this.playerInfo.player1Name = this.testConfig.localcustom.leftPlayerName;
             this.paddles.leftPaddle.color = this.testConfig.localcustom.leftPlayerColor;
             this.paddles.leftPaddle.isAI = this.testConfig.localcustom.leftPlayerIsAI;

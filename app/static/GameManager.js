@@ -1,6 +1,5 @@
 // File: GameManager.js
 import { Game } from './Game.js';
-import { Configs } from './config.js';
 import { ConfigManager } from './ConfigManager.js';
 import { SocketManager } from './SocketManager.js';
 import { Menu } from './Menu.js';
@@ -27,7 +26,7 @@ class GameManager {
 		this.animateBound();
 	}
 
-	requestGame(config){
+	requestGame(config) {
 		this.ConfigManager.setConfig(config);
 		//db
 		this.startGame();
@@ -45,15 +44,15 @@ class GameManager {
 	initializeKeyPressListener() {
 		document.addEventListener('keydown', (event) => this.handleKeyPress(event));
 	}
-	
-	async startGame(){
+
+	async startGame() {
 		this.game = new Game(this);
 		await this.game.initialize(this.ConfigManager);
 
 		this.isMenued = false;
 		// this.renderGameScene();
 
-		if (this.isRemote){
+		if (this.isRemote) {
 			this.socketManager = new SocketManager(this);
 			this.game.scoreTracker.setSocketManager(this.socketManager);
 			this.game.renderer.render(this.game.scene, this.game.camera);
@@ -74,7 +73,7 @@ class GameManager {
 	renderGameScene() {
 		const gameContainer = document.getElementById('gameContainer');
 		gameContainer.innerHTML = '';
-		
+
 		gameContainer.appendChild(this.game.renderer.domElement);
 	}
 
@@ -188,7 +187,7 @@ class GameManager {
 			this.animationFrameId = requestAnimationFrame(this.animateBound);
 	}
 
-	
+
 
 	stopGame() {
 		if (this.game) {
