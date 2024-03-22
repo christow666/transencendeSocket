@@ -65,10 +65,11 @@ export class SocketManager {
 	}
 
 	parseMessage(data) {
+
 		switch (data.type) {
 			case this.MessageType.CLIENT_TYPE:
 				this.gameManager.setRole(data.msg);
-				if (data.msg === "host") {
+				if (data.msg === "host")
 					this.isHost = 1;
 				break;
 			case this.MessageType.GAME_POSITION:
