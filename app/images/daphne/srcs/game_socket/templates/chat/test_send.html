@@ -1,36 +1,84 @@
-{% extends "base.html" %} {% block title %}GameSocket room for "{{ game.title
-}}"{% endblock %} {% block content %}
+{% extends "base.html" %}
+
+{% block title %}
+  GameSocket room for "{{ game.title }}"
+{% endblock %}
+
+
+{% block content %}
 <div id="game_socket"></div>
 <div id="game_socket-input">
   <input id="game_socket-message-input" type="text" />
   <input id="game_socket-message-submit" type="submit" value="Send" />
 </div>
-{% endblock %} {% block include_js %} {{ game.id|json_script:"game-id" }} {{
-request.user.username|json_script:"request-user" }} {% endblock %} {% block
-domready %} const gameId = JSON.parse(
-document.getElementById('game-id').textContent ); const requestUser =
-JSON.parse( document.getElementById('request-user').textContent ); const url =
-'wss://' + window.location.host + '/ws/game_socket/room/' + gameId + '/'; const
-game_socketSocket = new WebSocket(url); game_socketSocket.onmessage =
-function(event) { const data = JSON.parse(event.data); const game_socket =
-document.getElementById('game_socket'); const dateOptions = {hour: 'numeric',
-minute: 'numeric', hour12: true}; const datetime = new
-Date(data.datetime).toLocaleString('en', dateOptions); const isMe = data.user
-=== requestUser; const source = isMe ? 'me' : 'other'; const name = isMe ? 'Me'
-: data.user; game_socket.innerHTML += '
-<div class="message ' + source + '">
-  ' + '<strong>' + name + '</strong> ' + '<span class="date"
-    >' + datetime + '</span
-  ><br />' + data.message + '
-</div>
-'; game_socket.scrollTop = game_socket.scrollHeight; };
-game_socketSocket.onclose = function(event) { console.error('GameSocket socket
-closed unexpectedly'); }; const input =
-document.getElementById('game_socket-message-input'); const submitButton =
-document.getElementById('game_socket-message-submit');
-submitButton.addEventListener('click', function(event) { const message =
-input.value; if(message) { game_socketSocket.send(JSON.stringify({'message':
-message})); input.value = ''; input.focus(); } });
-input.addEventListener('keypress', function(event) { if (event.key === 'Enter')
-{ event.preventDefault(); submitButton.click(); } }); input.focus(); {% endblock
-%}
+{% endblock %}
+
+
+{% block include_js %}
+  {{ game.id|json_script:"game-id" }}
+  {{ request.user.username|json_script:"request-user" }}
+{% endblock %}
+
+{% block domready %}
+
+  <script>
+
+    const gameId = JSON.parse(document.getElementById('game-id').textContent);
+    const requestUser = JSON.parse(document.getElementById('request-user').textContent);
+    const url = 'wss://' + window.location.host + '/ws/game_socket/room/' + gameId + '/';
+    const game_socketSocket = new WebSocket(url);
+
+    // On Message
+    game_socketSocket.onmessage = function(event) {
+      
+      const data = JSON.parse(event.data);
+      const game_socket = document.getElementById('game_socket');
+      const dateOptions = { hour: 'numeric', minute: 'numeric', hour12: true };
+      const datetime = new Date(data.datetime).toLocaleString('en', dateOptions);
+      const isMe = data.user === requestUser;
+      const source = isMe ? 'me' : 'other';
+      const name = isMe ? 'Me' : data.user;
+
+      game_socket.innerHTML += `
+        <div class="message ${source}">
+          <strong>${name}</strong> 
+          <span class="date">${datetime}</span><br />
+          ${data.message}
+        </div>
+      `;
+      game_socket.scrollTop = game_socket.scrollHeight;
+    };
+
+    // Close
+    game_socketSocket.onclose = function(event) {
+      console.error('GameSocket socket closed unexpectedly');
+    };
+
+    // ??????????????????
+    const input = document.getElementById('game_socket-message-input');
+    const submitButton = document.getElementById('game_socket-message-submit');
+
+    // Click
+    submitButton.addEventListener('click', function(event) {
+      const message = input.value;
+      if (message) {
+        game_socketSocket.send(JSON.stringify({ 'message': message }));
+        input.value = '';
+        input.focus();
+      }
+    });
+
+    // Click Enter
+    input.addEventListener('keypress', function(event) {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        submitButton.click();
+      }
+    });
+
+
+    input.focus();
+
+
+  </script>
+{% endblock %}

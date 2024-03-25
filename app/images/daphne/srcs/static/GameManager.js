@@ -160,28 +160,37 @@ class GameManager {
 
 	handleBallMouvement(data) {
 		// Ensure that this.game.ballContainer is not null
+
 		if (this.game.ballContainer) {
 			const balls = this.game.ballContainer.getBalls();
+
 			// Ensure that data.ballPositions is not null and has at least one element
 			if (data.ballPositions && data.ballPositions.length > 0) {
 				let length = balls.length;
 				let positionLength = data.ballPositions.length;
 				for (let index = 0; index < length; index++) {
 					if (index < positionLength) {
+
 						// Set the position of the current ball based on the corresponding element of data.ballPositions
 						balls[index].mesh.position.x = data.ballPositions[index * 2];
 						balls[index].mesh.position.y = data.ballPositions[index * 2 + 1];
-					} else {
+					}
+					// Bad Balls Data
+					else {
 						console.error('Invalid ball positions data:', data.ballPositions);
-						break; // Exit the loop if there are no corresponding ball positions
+						break;
 					}
 				}
-			} else {
+			}
+			
+			else {
 				console.error('Invalid or empty ball positions data:', data.ballPositions);
 			}
-		} else {
-			console.error('Ball container is not initialized.');
 		}
+
+		// else {
+		// 	console.error('Ball container is not initialized.');
+		// }
 	}
 
 	serializePaddlePosition(paddle) {

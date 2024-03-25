@@ -24,26 +24,15 @@ if [ ! -e "/venv/.done" ]; then
 
     print_green "Installing Daphne"
     pip install daphne
-
-    # print_green "Installing Python-Dotenv"
-    # pip install python-dotenv
-
     print_green "Installing Channels"
     pip install channels
 
     print_green "Installing Channels redis"
     pip install channels_redis
 
-    # print_green "Installing gUnicorn"
-    # pip install gunicorn
-
-    # print_green "Installing Twisted"
-    # pip install twisted
-
     print_green "Installing Twisted - HTTP2 & TLS"
     pip install "Twisted[http2,tls]"
 
-    # Little file that just tells us that everything is installed
     touch /venv/.done
 
 else
